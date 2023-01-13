@@ -3,6 +3,7 @@
 mod compressed;
 mod instruction;
 pub mod types;
+// mod tests;
 
 use types::*;
 
@@ -310,7 +311,7 @@ fn decode_system(i: u32) -> DecodingResult {
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use Instruction::*;
 
@@ -321,6 +322,12 @@ mod tests {
     // and then post-processed with emacs macros.
     //
     // $ rg "\tbne\t" | sort -R | tail -n 3 | xclip -selection c
+
+    #[test] 
+    fn sdsp() {
+        assert_eq!(decode(0x0000e486).unwrap(), Sd(SType(0x0420b423)));
+        // assert_eq!(decode(0xe0a2).unwrap())
+    }
 
     #[test]
     fn decoding() {

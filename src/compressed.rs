@@ -50,8 +50,24 @@ pub fn decode_q01(_i: u32) -> DecodingResult {
     Err(DecodingError::Unimplemented)
 }
 
-pub fn decode_q10(_i: u32) -> DecodingResult {
-    Err(DecodingError::Unimplemented)
+pub fn decode_q10(i: u32) -> DecodingResult {
+    match i >> 13 {
+        0b111 => {
+            // 获得 imm 与 rs2
+            let imm = ((i >> 7) & 0b111111) << 3;
+            let rs2 = (i >> 2) & 0b11111;
+            // 将其变成 Sd 指令
+            Ok(Instruction::Sd(SType(
+                0b0100011 | // func [0: 6]
+                (imm & 0b11111) << 7 | // [7: 11]
+                0b011 << 12 | // [12: 14]
+                (0x2 << 15) | // rs1 sp [15: 19]
+                (rs2 << 20) | // rs2 [20: 24]
+                 (imm >> 5) << 25
+            )))
+        }
+        _ => Err(DecodingError::Unimplemented)
+    }
 }
 
 #[cfg(test)]
